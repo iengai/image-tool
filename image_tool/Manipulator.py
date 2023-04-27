@@ -1,3 +1,5 @@
+import os
+
 from PIL import Image, ImageOps
 from rembg import remove
 
@@ -6,6 +8,7 @@ class Manipulator:
     origin_path = None
     png_path = None
     image = None
+    output_fold = 'output'
 
     def __init__(self, image_path: str):
         self.origin_path = self.png_path = image_path
@@ -17,6 +20,12 @@ class Manipulator:
                 self.__convert_to_png()
         if self.image.mode != "RGBA":
             self.image = self.image.convert("RGBA")
+
+    def get_output_path(self, filename):
+        # 检查文件夹是否存在
+        if not os.path.isdir(self.output_fold):
+            os.makedirs(self.output_fold)
+        return os.path.join(self.output_fold, filename)
 
     def __convert_to_png(self):
         self.png_path = self.origin_path.split('.')[0] + '.png'
@@ -38,13 +47,14 @@ class Manipulator:
         # 调整图片大小
         self.image = self.image.resize((new_width, new_height))
 
-        self.image.save('1-resized-' + self.png_path)
+        output_path = self.get_output_path('1-resized-' + self.png_path)
+        self.image.save(output_path)
 
-        return '1-resized-' + self.png_path
+        return output_path
 
     def __2_remove_background(self):
         self.image = remove(self.image)
-        self.image.save('2-bgrem-' + self.png_path)
+        self.image.save(self.get_output_path('2-bgrem-' + self.png_path))
 
     def __3_square(self):
 
@@ -66,7 +76,7 @@ class Manipulator:
         self.image = new_image
 
         # 保存图片
-        self.image.save('3-squared-' + self.png_path, format='png')
+        self.image.save(self.get_output_path('3-squared-' + self.png_path), format='png')
         return self.image
 
     def __4_transparent_to_bw(self):
@@ -75,7 +85,7 @@ class Manipulator:
         self.image = ImageOps.invert(alpha_channel)
 
         # 保存黑白形式的透明度通道
-        self.image.save('4-bw-' + self.png_path)
+        self.image.save(self.get_output_path('4-bw-' + self.png_path))
         return self.image
 
 

@@ -90,8 +90,10 @@ class Manipulator:
 
     @staticmethod
     def merge(overlay, background, output):
-        overlay = overlay.convert("RGBA")
-        background = background.convert("RGBA")
+        if overlay.mode != "RGBA":
+            overlay = overlay.convert("RGBA")
+        if background.mode != 'RGBA':
+            background = background.convert("RGBA")
         background.alpha_composite(overlay)
 
         background.save(output)

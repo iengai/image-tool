@@ -99,13 +99,3 @@ class Manipulator:
         background.save(output)
 
         return output
-
-
-def merge(overlay, background, output):
-    overlay = overlay.convert("RGBA")
-    background = background.convert("RGBA")
-    background.alpha_composite(overlay)
-
-    background.save(output)
-
-    return output
